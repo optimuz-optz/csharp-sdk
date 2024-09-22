@@ -1,6 +1,6 @@
 using Optimuz.Optz.Sdk.Results;
 
-namespace Optimuz.Optz.Sdk.Mail.Sms;
+namespace Optimuz.Optz.Sdk.Mail.WhatsApp;
 
 internal class Client
 {
@@ -8,7 +8,7 @@ internal class Client
 
     internal Client(string host)
     {
-        _client = new HttpClient(host, "sms");
+        _client = new HttpClient(host, "whatsapp");
     }
 
     internal Task<OneOf<ItemResult<Queue.Response>, ErrorResult>> Queue(Queue.Request request, string authToken, CancellationToken cancellationToken)

@@ -8,8 +8,8 @@ public class Optz
 {
     private static readonly ConcurrentDictionary<string, Optz> _instances = new();
 
-    private readonly Auth.Client _auth;
-    private readonly Mail.Client _mail;
+    private readonly Lazy<Auth.Client> _auth;
+    private readonly Lazy<Mail.Client> _mail;
 
     private readonly string _account;
     private readonly string _username;
@@ -17,18 +17,12 @@ public class Optz
 
     private Optz(string host, string account, string username, string password)
     {
-        _auth = new Auth.Client(host.Replace("*", "https://auth"));
-        _mail = new Mail.Client(host.Replace("*", "https://mail"));
+        _auth = new Lazy<Auth.Client>(() => new Auth.Client(host.Replace("*", "https://auth")));
+        _mail = new Lazy<Mail.Client>(() => new Mail.Client(host.Replace("*", "https://mail")));
 
         _account = account;
         _username = username;
         _password = password;
-    }
-
-    ~Optz()
-    {
-        _auth.Dispose();
-        _mail.Dispose();
     }
 
     /// <summary>
@@ -57,7 +51,7 @@ public class Optz
     /// <returns>A task that represents the asynchronous operation. The task result contains either an ItemResult or an ErrorResult.</returns>
     public async Task<OneOf<ItemResult<Mail.Email.Queue.Response>, ErrorResult>> QueueEmail(Mail.Email.Queue.Request request, CancellationToken cancellationToken = default)
     {
-        return await Authenticate(accessToken => _mail.QueueEmail(request, accessToken, cancellationToken), cancellationToken);
+        return await Authenticate(accessToken => _mail.Value.QueueEmail(request, accessToken, cancellationToken), cancellationToken);
     }
 
     /// <summary>
@@ -68,7 +62,18 @@ public class Optz
     /// <returns>A task that represents the asynchronous operation. The task result contains either an ItemResult or an ErrorResult.</returns>
     public async Task<OneOf<ItemResult<Mail.Sms.Queue.Response>, ErrorResult>> QueueSms(Mail.Sms.Queue.Request request, CancellationToken cancellationToken = default)
     {
-        return await Authenticate(accessToken => _mail.QueueSms(request, accessToken, cancellationToken), cancellationToken);
+        return await Authenticate(accessToken => _mail.Value.QueueSms(request, accessToken, cancellationToken), cancellationToken);
+    }
+
+    /// <summary>
+    /// Queues a WhatsApp message for sending.
+    /// </summary>
+    /// <param name="request">The WhatsApp queue request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains either an ItemResult or an ErrorResult.</returns>
+    public async Task<OneOf<ItemResult<Mail.WhatsApp.Queue.Response>, ErrorResult>> QueueWhatsApp(Mail.WhatsApp.Queue.Request request, CancellationToken cancellationToken = default)
+    {
+        return await Authenticate(accessToken => _mail.Value.QueueWhatsApp(request, accessToken, cancellationToken), cancellationToken);
     }
 
     #endregion
@@ -85,7 +90,7 @@ public class Optz
     internal async Task<OneOf<T, ErrorResult>> Authenticate<T>(Func<string, Task<OneOf<T, ErrorResult>>> action, CancellationToken cancellationToken = default)
     {
         var request = new Auth.Signin.Request(_account, _username, _password);
-        var signin = await _auth.Signin(request, cancellationToken);
+        var signin = await _auth.Value.Signin(request, cancellationToken);
         return await signin.Match(success => action(success.Data.AccessToken), error => Task.FromResult<OneOf<T, ErrorResult>>(error));
     }
 

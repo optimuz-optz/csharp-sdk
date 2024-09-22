@@ -4,7 +4,7 @@ using Optimuz.Optz.Sdk.Results;
 
 namespace Optimuz.Optz.Sdk.Auth;
 
-internal class Client : IDisposable
+internal class Client
 {
     private readonly HttpClient _client;
     private readonly MemoryCache _cache;
@@ -13,12 +13,6 @@ internal class Client : IDisposable
     {
         _client = new HttpClient(host);
         _cache = new MemoryCache(new MemoryCacheOptions());
-    }
-
-    public void Dispose()
-    {
-        _client.Dispose();
-        _cache.Dispose();
     }
 
     internal Task<OneOf<ItemResult<Signin.Response>, ErrorResult>> Signin(Signin.Request request, CancellationToken cancellationToken)

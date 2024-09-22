@@ -5,18 +5,13 @@ using System.Net.Http.Headers;
 
 namespace Optimuz.Optz.Sdk.Http;
 
-internal class HttpClient : IDisposable
+internal class HttpClient
 {
     private readonly System.Net.Http.HttpClient _client;
 
     internal HttpClient(params string[] path)
     {
         _client = new System.Net.Http.HttpClient() { BaseAddress = BuildBaseAddress(path) };
-    }
-
-    public void Dispose()
-    {
-        _client.Dispose();
     }
 
     private static Uri BuildBaseAddress(string[] parts)

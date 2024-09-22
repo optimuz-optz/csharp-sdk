@@ -11,6 +11,7 @@ The **Optz SDK** provides a simple interface for interacting with the Optz servi
   - [Mail](#mail)
     - [QueueEmail](#queueemail)
     - [QueueSms](#queuesms)
+    - [QueueWhatsApp](#queuewhatsapp)
 - [Results](#results)
 - [License](#license)
 
@@ -66,6 +67,14 @@ Queues an SMS for sending. Returns a result indicating success or failure.
 
 ```csharp
 Task<OneOf<ItemResult<Mail.Sms.Queue.Response>, ErrorResult>> QueueSms(Mail.Sms.Queue.Request request, CancellationToken cancellationToken = default);
+```
+
+#### QueueWhatsApp
+
+Queues an WhatsApp message for sending. Returns a result indicating success or failure.
+
+```csharp
+Task<OneOf<ItemResult<Mail.WhatsApp.Queue.Response>, ErrorResult>> QueueWhatsApp(Mail.WhatsApp.Queue.Request request, CancellationToken cancellationToken = default);
 ```
 
 ## Results
