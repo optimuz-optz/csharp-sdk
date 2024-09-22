@@ -91,4 +91,4 @@ When a method call fails, it returns an **ErrorResult** object. This object cont
 
 ## License
 
-This project is licensed under the terms described in the LICENSE file.
+This project is licensed under the terms described in the [LICENSE](https://raw.githubusercontent.com/optimuz-optz/csharp-sdk/refs/heads/master/LICENSE) file.
